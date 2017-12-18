@@ -2,12 +2,17 @@ import numpy as np
 import pyncorr
 import matplotlib.pylab as plt
 
+import time 
+
 nbins = 200
 
 #nd = 1000
 #nr = 1000
 #x = np.random.random((nd,3))
 #y = np.random.random((nr,3))
+
+t0 = time.time()
+print("Reading in some data....\n")
 
 # Read in some data
 data = np.loadtxt('../test_data/GRID_model_data.dat',unpack=True)
@@ -33,10 +38,13 @@ hrange = 450
 plt.figure()
 plt.plot(x.transpose()[0],x.transpose()[1],',')
 
+t1 = time.time()
 
 d,edges = pyncorr.cartesian_distance(x,y,histrange=(0,hrange),nbins=nbins)
 dr = d
 pyncorr.write_out_paircounts(d,edges,nd,nr,filename='dr.dat',norm=nd*nr)
+
+t2 = time.time()
 
 print()
 
@@ -44,10 +52,13 @@ d,edges = pyncorr.cartesian_distance(x,x,histrange=(0,hrange),same_coords=True,n
 dd = d
 pyncorr.write_out_paircounts(d,edges,nd,nd,filename='dd.dat',norm=(nd*nd-nd)/2.0)
 
+t3 = time.time()
+
 d,edges = pyncorr.cartesian_distance(y,y,histrange=(0,hrange),same_coords=True,nbins=nbins)
 rr = d
 pyncorr.write_out_paircounts(d,edges,nr,nr,filename='rr.dat',norm=(nr*nr-nr)/2.0)
 
+t4 = time.time()
 
 # Read in the data
 dd_data = np.loadtxt('dd.dat',unpack=True)
@@ -72,5 +83,10 @@ w = ((dd/ddnorm) - (2*dr/drnorm) + (rr/rrnorm))/(rr/rrnorm)
 plt.figure()
 plt.plot(x,w,'o',label='w')
 plt.legend()
+
+print("Time to read in and plot the data: %f sec" % (t1-t0))
+print("Time to calc DR: %f sec" % (t2-t1))
+print("Time to calc DD: %f sec" % (t3-t2))
+print("Time to calc RR: %f sec" % (t4-t3))
 
 plt.show()
