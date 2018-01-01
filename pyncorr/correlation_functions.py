@@ -50,6 +50,9 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
             dz = temp_coord[2] - coord1_T[2]
 
         dist = np.sqrt(dx*dx + dy*dy + dz*dz)
+        #temp = dist[dist<=1]
+        #if len(temp)>0:
+            #print(temp)
 
         # Histogram it here. This is efficient if we pass in a large number of
         # galaxies, but it can become slower if the numbers are small.

@@ -31,16 +31,17 @@ data = data.transpose()
 #random = np.array(random)
 random = random.transpose()
 
-x = data
-y = random
-hrange = 450
+#x = data
+#y = random
+#hrange = 450
+hrange = 200
 
 plt.figure()
-plt.plot(x.transpose()[0],x.transpose()[1],',')
+plt.plot(data.transpose()[0],data.transpose()[1],',')
 
 t1 = time.time()
 
-d,edges = pyncorr.cartesian_distance(x,y,histrange=(0,hrange),nbins=nbins)
+d,edges = pyncorr.cartesian_distance(data,random,histrange=(0,hrange),nbins=nbins)
 dr = d
 pyncorr.write_out_paircounts(d,edges,nd,nr,filename='dr.dat',norm=nd*nr)
 
@@ -48,13 +49,13 @@ t2 = time.time()
 
 print()
 
-d,edges = pyncorr.cartesian_distance(x,x,histrange=(0,hrange),same_coords=True,nbins=nbins)
+d,edges = pyncorr.cartesian_distance(data,data,histrange=(0,hrange),same_coords=True,nbins=nbins)
 dd = d
 pyncorr.write_out_paircounts(d,edges,nd,nd,filename='dd.dat',norm=(nd*nd-nd)/2.0)
 
 t3 = time.time()
 
-d,edges = pyncorr.cartesian_distance(y,y,histrange=(0,hrange),same_coords=True,nbins=nbins)
+d,edges = pyncorr.cartesian_distance(random,random,histrange=(0,hrange),same_coords=True,nbins=nbins)
 rr = d
 pyncorr.write_out_paircounts(d,edges,nr,nr,filename='rr.dat',norm=(nr*nr-nr)/2.0)
 
