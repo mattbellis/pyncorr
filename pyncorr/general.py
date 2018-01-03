@@ -31,13 +31,13 @@ def write_out_paircounts(counts, bin_edges, n0, n1, filename="output.dat", norm=
 ################################################################################
 def radeccmd2xyz(ra, dec, cmd):
 
-    # com is comoving distance
+    # cmd is comoving distance
     rarad = np.deg2rad(ra)
     decrad = np.deg2rad(dec)
 
-    x=cmd*np.cos(ra)*np.cos(dec)
-    y=cmd*np.sin(ra)*np.cos(dec)
-    z=cmd*np.sin(dec)
+    x=cmd*np.cos(rarad)*np.cos(decrad)
+    y=cmd*np.sin(rarad)*np.cos(decrad)
+    z=cmd*np.sin(decrad)
 
     return x,y,z
 
