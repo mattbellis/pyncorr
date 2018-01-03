@@ -9,7 +9,7 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
     #   [ 1987.5, 2564.7, 2439.42], 
     #   ......................... ]
 
-    print("Ngals: %d %d" % (len(coord0), len(coord1)))
+    #print("Ngals: %d %d" % (len(coord0), len(coord1)))
 
     big_Ngals = False
     if len(coord0)>=5000 or len(coord1)>5000:
@@ -26,7 +26,7 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
     coord1_T = coord1.transpose() 
 
     ncoord0 = len(coord0)
-    print(ncoord0)
+    #print(ncoord0)
 
     hist_tot = np.zeros(nbins,dtype=int)
     bin_edges = None
@@ -35,8 +35,10 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
     # the distance with *all* of ncoord1 at once. 
     for i in range(ncoord0):
 
+        '''
         if i%1000==0:
             print("On %d out of %d gals" % (i, ncoord0))
+        '''
 
         temp_coord = coord0[i]
 
