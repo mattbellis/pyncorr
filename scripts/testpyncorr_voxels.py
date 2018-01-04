@@ -22,10 +22,10 @@ cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 
 #data = np.loadtxt('../../cmass/samples/10k_weighted_north_cmass.dat',unpack=True)
 #random = np.loadtxt('../../cmass/samples/10k_weighted_random.dat',unpack=True)
-data = np.loadtxt('../../cmass/samples/100k_weighted_north_cmass.dat',unpack=True)
-random = np.loadtxt('../../cmass/samples/100k_weighted_random.dat',unpack=True)
-#data = np.loadtxt('../../cmass/samples/500k_weighted_north_cmass.dat',unpack=True)
-#random = np.loadtxt('../../cmass/samples/1mil_weighted_random.dat',unpack=True)
+#data = np.loadtxt('../../cmass/samples/100k_weighted_north_cmass.dat',unpack=True)
+#random = np.loadtxt('../../cmass/samples/100k_weighted_random.dat',unpack=True)
+data = np.loadtxt('../../cmass/samples/500k_weighted_north_cmass.dat',unpack=True)
+random = np.loadtxt('../../cmass/samples/1mil_weighted_random.dat',unpack=True)
 
 #ra,dec,cmd = data[0], data[1], data[3]
 ra,dec,redz,cmd_org = data[0], data[1], data[2], data[3]
