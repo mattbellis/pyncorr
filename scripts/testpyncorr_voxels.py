@@ -81,6 +81,8 @@ print(vcoords_data[0][vcoords_data[0]!=0])
 print(vcoords_data[1][vcoords_data[1]!=0])
 print(vcoords_data[2][vcoords_data[2]!=0])
 
+voxels_data = pyncorr.voxelize_data(data, nvoxels_data, vcoords_data)
+
 
 ###########################################################
 #x,y,z = pyncorr.radeccmd2xyz(random[0], random[1], random[2])
@@ -100,6 +102,7 @@ print(vcoords_random[0][vcoords_random[0]!=0])
 print(vcoords_random[1][vcoords_random[1]!=0])
 print(vcoords_random[2][vcoords_random[2]!=0])
 
+voxels_random = pyncorr.voxelize_data(random, nvoxels_random, vcoords_random)
 #exit()
 
 ################################################################################
@@ -112,6 +115,8 @@ hrange = 200
 
 plt.figure()
 plt.plot(data.transpose()[0],data.transpose()[1],',')
+#plt.show()
+#exit()
 
 
 ################ DR ##################################################
@@ -124,27 +129,22 @@ tot_calc_dr = 0
 for i in range(nvoxels_data[0]):
     for j in range(nvoxels_data[1]):
         for k in range(nvoxels_data[2]):
-            index = vcoords_data[0]==i
-            index *= vcoords_data[1]==j
-            index *= vcoords_data[2]==k
-            data_temp = data[index]
-            tot += len(data_temp)
+            data_temp = voxels_data[i][j][k]
+            if data_temp is not None:
+                tot += len(data_temp)
 
-            for ii in range(i-1,i+2):
-                for jj in range(j-1,j+2):
-                    for kk in range(k-1,k+2):
-                        if ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
-                            print(i,j,k,ii,jj,kk)
-                            index = vcoords_random[0]==ii
-                            index *= vcoords_random[1]==jj
-                            index *= vcoords_random[2]==kk
-                            random_temp = random[index]
+                for ii in range(i-1,i+2):
+                    for jj in range(j-1,j+2):
+                        for kk in range(k-1,k+2):
+                            if ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
+                                print(i,j,k,ii,jj,kk)
+                                random_temp = voxels_random[ii][jj][kk]
 
-                            if len(data_temp)>0 and len(random_temp)>0:
-                                print("N galaxies: ",len(data_temp),len(random_temp))
-                                tot_calc_dr += len(data_temp)*len(random_temp)
-                                hist_temp,edges = pyncorr.cartesian_distance(data_temp,random_temp,histrange=(0,hrange),nbins=nbins)
-                                d += hist_temp
+                                if data_temp is not None and random_temp is not None:
+                                    print("N galaxies: ",len(data_temp),len(random_temp))
+                                    tot_calc_dr += len(data_temp)*len(random_temp)
+                                    hist_temp,edges = pyncorr.cartesian_distance(data_temp,random_temp,histrange=(0,hrange),nbins=nbins)
+                                    d += hist_temp
 dr = d
 pyncorr.write_out_paircounts(d,edges,nd,nr,filename='dr.dat',norm=nd*nr)
 print("tot: ",tot)
@@ -162,44 +162,39 @@ list_of_combos_reversed = []
 for i in range(nvoxels_data[0]):
     for j in range(nvoxels_data[1]):
         for k in range(nvoxels_data[2]):
-            index = vcoords_data[0]==i
-            index *= vcoords_data[1]==j
-            index *= vcoords_data[2]==k
-            data_temp = data[index]
-            tot += len(data_temp)
+            data_temp = voxels_data[i][j][k]
+            if data_temp is not None:
+                tot += len(data_temp)
 
-            for ii in range(i-1,i+2):
-                for jj in range(j-1,j+2):
-                    for kk in range(k-1,k+2):
+                for ii in range(i-1,i+2):
+                    for jj in range(j-1,j+2):
+                        for kk in range(k-1,k+2):
 
-                        # Do this to make sure we don't double count
-                        vindex = "%03s%03s%03s%03s%03s%03s" % (i,j,k,ii,jj,kk)
-                        vindex_reversed = "%03s%03s%03s%03s%03s%03s" % (ii,jj,kk,i,j,k)
-                        do_calc = True
-                        if vindex not in list_of_combos_reversed:
+                            # Do this to make sure we don't double count
+                            vindex = "%03s%03s%03s%03s%03s%03s" % (i,j,k,ii,jj,kk)
+                            vindex_reversed = "%03s%03s%03s%03s%03s%03s" % (ii,jj,kk,i,j,k)
                             do_calc = True
-                        else:
-                            do_calc = False
+                            if vindex not in list_of_combos_reversed:
+                                do_calc = True
+                            else:
+                                do_calc = False
 
-                        # Do this part only after we've checked everything else. 
-                        list_of_combos_reversed.append(vindex_reversed)
+                            # Do this part only after we've checked everything else. 
+                            list_of_combos_reversed.append(vindex_reversed)
 
-                        if do_calc and ii<nvoxels_data[0] and jj<nvoxels_data[1] and kk<nvoxels_data[2] and ii>=0 and jj>=0 and kk>=0:
-                            print(i,j,k,ii,jj,kk)
-                            index = vcoords_data[0]==ii
-                            index *= vcoords_data[1]==jj
-                            index *= vcoords_data[2]==kk
-                            data_temp2 = data[index]
+                            if do_calc and ii<nvoxels_data[0] and jj<nvoxels_data[1] and kk<nvoxels_data[2] and ii>=0 and jj>=0 and kk>=0:
+                                print(i,j,k,ii,jj,kk)
+                                data_temp2 = voxels_data[ii][jj][kk]
 
-                            if len(data_temp)>0 and len(data_temp2)>0:
-                                print("N galaxies: ",len(data_temp),len(data_temp2))
-                                if i==ii and j==jj and k==kk:
-                                    tot_calc_dd += (len(data_temp)*len(data_temp2) - len(data_temp2))/2
-                                    hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
-                                else:
-                                    tot_calc_dd += (len(data_temp)*len(data_temp2))
-                                    hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins)
-                                d += hist_temp
+                                if data_temp is not None and data_temp2 is not None:
+                                    print("N galaxies: ",len(data_temp),len(data_temp2))
+                                    if i==ii and j==jj and k==kk:
+                                        tot_calc_dd += (len(data_temp)*len(data_temp2) - len(data_temp2))/2
+                                        hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
+                                    else:
+                                        tot_calc_dd += (len(data_temp)*len(data_temp2))
+                                        hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins)
+                                    d += hist_temp
 dd = d
 pyncorr.write_out_paircounts(d,edges,nd,nd,filename='dd.dat',norm=(nd*nd-nd)/2.0)
 print("tot: ",tot)
@@ -216,43 +211,38 @@ tot_calc_rr = 0
 for i in range(nvoxels_random[0]):
     for j in range(nvoxels_random[1]):
         for k in range(nvoxels_random[2]):
-            index = vcoords_random[0]==i
-            index *= vcoords_random[1]==j
-            index *= vcoords_random[2]==k
-            random_temp = random[index]
+            random_temp = voxels_random[i][j][k]
+            if random_temp is not None:
 
-            for ii in range(i-1,i+2):
-                for jj in range(j-1,j+2):
-                    for kk in range(k-1,k+2):
-                        if ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2]:
-                            index = vcoords_random[0]==ii
-                            index *= vcoords_random[1]==jj
-                            index *= vcoords_random[2]==kk
-                            random_temp2 = random[index]
+                for ii in range(i-1,i+2):
+                    for jj in range(j-1,j+2):
+                        for kk in range(k-1,k+2):
+                            if ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2]:
+                                random_temp2 = voxels_random[ii][jj][kk]
 
-                            # Do this to make sure we don't double count
-                            vindex = "%03s%03s%03s%03s%03s%03s" % (i,j,k,ii,jj,kk)
-                            vindex_reversed = "%03s%03s%03s%03s%03s%03s" % (ii,jj,kk,i,j,k)
-                            do_calc = True
-                            if vindex not in list_of_combos_reversed:
+                                # Do this to make sure we don't double count
+                                vindex = "%03s%03s%03s%03s%03s%03s" % (i,j,k,ii,jj,kk)
+                                vindex_reversed = "%03s%03s%03s%03s%03s%03s" % (ii,jj,kk,i,j,k)
                                 do_calc = True
-                            else:
-                                do_calc = False
+                                if vindex not in list_of_combos_reversed:
+                                    do_calc = True
+                                else:
+                                    do_calc = False
 
-                            # Do this part only after we've checked everything else. 
-                            list_of_combos_reversed.append(vindex_reversed)
+                                # Do this part only after we've checked everything else. 
+                                list_of_combos_reversed.append(vindex_reversed)
 
-                            if do_calc and ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
-                                print(i,j,k,ii,jj,kk)
-                                if len(random_temp)>0 and len(random_temp2)>0:
-                                    print("N galaxies: ",len(random_temp),len(random_temp2))
-                                    if i==ii and j==jj and k==kk:
-                                        hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
-                                        tot_calc_rr += (len(random_temp)*len(random_temp2) - len(random_temp2))/2
-                                    else:
-                                        hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins)
-                                        tot_calc_rr += (len(random_temp)*len(random_temp2))
-                                    d += hist_temp
+                                if do_calc and ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
+                                    print(i,j,k,ii,jj,kk)
+                                    if random_temp is not None and random_temp2 is not None:
+                                        print("N galaxies: ",len(random_temp),len(random_temp2))
+                                        if i==ii and j==jj and k==kk:
+                                            hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
+                                            tot_calc_rr += (len(random_temp)*len(random_temp2) - len(random_temp2))/2
+                                        else:
+                                            hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins)
+                                            tot_calc_rr += (len(random_temp)*len(random_temp2))
+                                        d += hist_temp
 dd = d
 pyncorr.write_out_paircounts(d,edges,nr,nr,filename='rr.dat',norm=(nr*nr-nr)/2.0)
 

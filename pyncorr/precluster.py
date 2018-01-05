@@ -40,3 +40,28 @@ def divide_into_voxels(data, loedges, hiedges, voxel_widths, nvoxels):
         voxel_coords.append(vcoord)
 
     return voxel_coords
+
+################################################################################
+def voxelize_data(data, nvoxels, vcoords):
+
+    data_T = data.transpose()
+
+    voxels = []
+    for i in range(nvoxels[0]):
+        voxels.append([])
+        for j in range(nvoxels[1]):
+            voxels[i].append([])
+            for k in range(nvoxels[2]):
+                #print(i,j,k)
+                index = vcoords[0]==i
+                index *= vcoords[1]==j
+                index *= vcoords[2]==k
+                #print(index)
+                data_temp = data_T[index]
+                #voxels[i][j].append(data_temp.transpose())
+                if len(data_temp)>0:
+                    voxels[i][j].append(data_temp.copy())
+                else:
+                    voxels[i][j].append(None)
+
+    return voxels

@@ -20,7 +20,7 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
     nc0 = len(coord0)
     nc1 = len(coord1)
 
-    print("sizes: ",nc0,nc1)
+    #print("sizes: ",nc0,nc1)
 
     big_Ngals = False
     if nc0>=5000 or nc1>5000:
@@ -47,12 +47,12 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
     if limits1[-1]<nc1:
         limits1 = np.concatenate((limits1,np.array([nc1])))
 
-    print(limits0)
-    print(limits1)
+    #print(limits0)
+    #print(limits1)
 
     for i in range(len(limits0)-1):
         for j in range(len(limits1)-1):
-            print(i,j)
+            #print(i,j)
             if same_coords:
                 if j>=i:
                     idx0 = limits0[i]
