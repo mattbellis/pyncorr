@@ -1,5 +1,41 @@
 import numpy as np
 
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+
+
+################################################################################
+def read_in_columnar_data(filename, cols_to_use=[0,1,2], delimiter=None, convert=None):
+
+    vals = np.loadtxt(filename,unpack=True,delimiter=delimiter)
+
+    # Assume that we will always read in at least 3 values
+    A,B,C = vals[cols_to_use[0]], vals[cols_to_use[1]], vals[cols_to_use[2]]
+
+    if convert=="redz2cmd":
+        # We read in ra, dec, and redz
+        redz = C
+        cmd = cosmo.comoving_distance(redz)
+        cmd = cmd.value * 0.7
+        return np.array([A, B, cmd])
+    elif convert=="radecredz2xyz":
+        # We read in ra, dec, and redz
+        redz = C
+        cmd = cosmo.comoving_distance(redz)
+        cmd = cmd.value * 0.7
+        x,y,z = radeccmd2xyz(A,B,cmd)
+        return np.array([x,y,z])
+    elif convert=="radeccmd2xyz":
+        # We read in ra, dec, and cmd
+        x,y,z = radeccmd2xyz(A,B,C)
+        return np.array([x,y,z])
+    else:
+        # We read in either ra, dec, cmd, or x,y,z
+        return np.array([A,B,C])
+
+
+    
+
 ################################################################################
 def write_out_paircounts(counts, bin_edges, n0, n1, filename="output.dat", norm=None):
 

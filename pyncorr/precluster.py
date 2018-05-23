@@ -65,3 +65,40 @@ def voxelize_data(data, nvoxels, vcoords):
                     voxels[i][j].append(None)
 
     return voxels
+
+################################################################################
+def return_voxelized_data(data, voxel_widths, verbose=False):
+    # Get the the range over which the data extends in all 3 dimensions
+    loedges = [np.min(data[0]), np.min(data[1]), np.min(data[2])]
+    hiedges = [np.max(data[0]), np.max(data[1]), np.max(data[2])]
+
+    if verbose:
+        print("low edges of voxels: ")
+        print(loedges)
+        print("high edges of voxels: ")
+        print(hiedges)
+
+    nvoxels = define_boundaries(loedges, hiedges, voxel_widths)
+
+    if verbose:
+        print("Numbers of voxels: ")
+        print(nvoxels)
+
+    vcoords = divide_into_voxels(data, loedges, hiedges, voxel_widths, nvoxels)
+
+    if verbose:
+        print(vcoords)
+        print(vcoords[0][vcoords[0]!=0])
+        print(vcoords[1][vcoords[1]!=0])
+        print(vcoords[2][vcoords[2]!=0])
+
+    voxels = voxelize_data(data, nvoxels, vcoords)
+
+    dimensions = {}
+    dimensions["loedges"] = loedges
+    dimensions["hiedges"] = hiedges
+    dimensions["nvoxels"] = nvoxels
+
+    return voxels, dimensions
+
+
