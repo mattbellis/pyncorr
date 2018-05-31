@@ -1,67 +1,41 @@
 import numpy as np
 from scipy import spatial
-import matplotlib.pylab as plt
+import matplotlib.pyplot as plt
 from mpi4py import MPI
 
 comm = MPI.COMM_WORLD
 rank = comm.rank
+size = comm.size
 
-divs = 4
+seed = np.random.seed(5)
+data = np.random.random((1000,3))
+seed = np.random.seed(4)
+rand = np.random.random((1000,3))
+ddiv = np.array_split(data,size)
+
+hist = np.zeros((100))
+#print(len(hist))
+
+for i in range(rank,4,size):
+   d = spatial.distance.cdist(ddiv[i],rand)
+   h = np.histogram(d,bins=100)
+   hist += h[0]
+
+hist_f = np.zeros_like(hist)
+
+comm.Reduce([hist,MPI.DOUBLE],[hist_f,MPI.DOUBLE],root=0)
+
+comm.Barrier()
 
 if rank is 0:
-    seed = np.random.seed(seed=5)
-    data = np.random.random((100,3))
-    seed = np.random.seed(seed=10)
-    random = np.random.random((100,3))
-    
-    d_divs = np.array_split(data,3)
-    A=d_divs[0]
-    B=d_divs[1]
-    C=d_divs[2]
-    #D=np.zeros((len(d_divs[3])))
-    
-    comm.Send(A,dest=1,tag=0)
-    comm.Send(B,dest=2,tag=0)
-    comm.Send(C,dest=3,tag=0)
-    
-    comm.Bcast(random)
-    
-else:
-    data = np.empty((100,3))
-    random = np.empty((100,3))
-    d_divs = np.array_split(data,3)
-    A=d_divs[0]
-    B=d_divs[1]
-    C=d_divs[2]
-    d1 = np.empty(100)
-    d2 = np.empty(100)
-    d3 = np.empty(100)
-
-if rank is 1:
-    comm.Recv(A)
-    d1 = spatial.distance.cdist(A,random,metric='euclidean')
-    d1 = np.concatenate(d1[:])
-    d1 = np.histogram(d1,bins=100,range=(0,1))
-    comm.Send([d1[0],MPI.DOUBLE],dest=3)
-    
-if rank is 2:
-    comm.Recv(B)
-    d2 = spatial.distance.cdist(A,random,metric='euclidean')
-    d2 = np.concatenate(d2[:])
-    d2 = np.histogram(d2,bins=100,range=(0,1))
-    #print(d2b)
-    comm.Send([d2[0],MPI.DOUBLE],dest=3)
-    
-if rank is 3:
-    comm.Recv(C)
-    comm.Recv(d1)
-    comm.Recv(d2)
-    d3 = spatial.distance.cdist(A,random,metric='euclidean')
-    d3 = np.concatenate(d3[:])
-    d3 = np.histogram(d3,bins=100,range=(0,1))
     plt.figure()
-    #plt.plot(d3)
-    #plt.plot(d2)
-    #plt.plot(d3)
+    plt.plot(hist_f)
+    plt.show()
 
-plt.show()
+
+
+
+
+    
+    
+    
