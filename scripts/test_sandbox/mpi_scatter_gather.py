@@ -9,6 +9,7 @@ def pprint(string="", end="\n", comm=MPI.COMM_WORLD):
     """Print for MPI parallel programs: Only rank 0 prints *str*."""
     if comm.rank == 0:
         print(string) 
+
 #########################################
 # Example Code
 #########################################
@@ -44,7 +45,6 @@ for r in range(comm.size):
 
 '''
 #########################################
-
 
 if rank is 0:
     data = np.arange(20,dtype=np.float64)
