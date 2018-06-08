@@ -128,8 +128,50 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
 
     return hist_tot,bin_edges
 
-
-
+def angular_distance(data,random,nbins=100, histrange=(0,200)):
+    
+    def calc_angular_separation(co1,co2):
+        ra1 = co1[0]
+        d1 = co1[1]
+        ra2 = co2[0]
+        d2 = co2[1]
+        a = np.sqrt( ((np.cos(d2)**2)*(np.sin(ra2-ra1)**2)) + (np.cos(d1)*np.sin(d2)-np.sin(d1)*np.cos(d2)*np.cos(ra2-ra1))**2)
+        b = (np.sin(d1)*np.sin(d2)) + (np.cos(d1)*np.cos(d2)*np.cos(ra2-ra1))
+        t = np.arctan(a/b)
+        return t
+    
+    dd_hist = np.zeros(200)
+    dr_hist = np.zeros(200)
+    rr_hist = np.zeros(200)
+    #dd
+    for i in range(0,len(data[0])):
+        
+        co1=data[0][i],data[1][i]
+        co2=data[0][i:-1],data[1][i:-1]
+            
+        dist = calc_angular_separation(np.deg2rad(co1),np.deg2rad(co2))
+        hist = np.histogram(dist,bins=200,range=((0,2*np.pi)))
+        dd_hist+= hist[0]    
+    #dr
+    for i in range(0,len(data[0])):
+        
+        co1=data[0][i],data[1][i]
+        co2=random[0][i:-1],random[1][i:-1]
+            
+        dist = calc_angular_separation(np.deg2rad(co1),np.deg2rad(co2))
+        hist = np.histogram(dist,bins=200,range=((0,2*np.pi)))
+        dr_hist+= hist[0]
+    #rr
+    for i in range(0,len(random[0)):
+        
+        co1=random[0][i],random[1][i]
+        co2=random[0][i:-1],random[1][i:-1]
+            
+        dist = calc_angular_separation(np.deg2rad(co1),np.deg2rad(co2))
+        hist = np.histogram(dist,bins=200,range=((0,2*np.pi)))
+        rr_hist+= hist[0]
+        
+    return dd_hist,dr_hist,rr_hist
 
 
 
