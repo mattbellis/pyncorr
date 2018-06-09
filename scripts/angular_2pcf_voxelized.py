@@ -4,50 +4,47 @@ import matplotlib.pylab as plt
 
 import time 
 
-nbins = 50
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+
+#nbins = 500
+#nbins = 36 # Hard code this for now by hand for the log scaling
+nbins = 30 # Hard code this for now by hand for the log scaling
 
 t0 = time.time()
 print("Reading in some data....\n")
 
 # Read in some data
-#data = np.loadtxt('../test_data/GRID_model_data.dat',unpack=True)
-#random = np.loadtxt('../test_data/GRID_model_random.dat',unpack=True)
+#data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data.dat',cols_to_use=[0,1,2],convert=None)
+#random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random.dat',cols_to_use=[0,1,2],convert=None)
 
-#data = np.loadtxt('../test_data/GRID_model_data_LARGE_SAMPLE.dat',unpack=True)
-#random = np.loadtxt('../test_data/GRID_model_random_LARGE_SAMPLE.dat',unpack=True)
+#data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data_LARGE_SAMPLE.dat',cols_to_use=[0,1,2],convert=None)
+#random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random_LARGE_SAMPLE.dat',cols_to_use=[0,1,2],convert=None)
 
 # REAL DATA
-from astropy.cosmology import FlatLambdaCDM
-cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+#data = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
+#random = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_random.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
+#data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
+#random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
 
-#data = np.loadtxt('../../cmass/samples/10k_weighted_north_cmass.dat',unpack=True)
-#random = np.loadtxt('../../cmass/samples/10k_weighted_random.dat',unpack=True)
+# Do this just to plot RA vs DEC
+#data = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
+#random = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
+data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
+random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
+
 #data = np.loadtxt('../../cmass/samples/100k_weighted_north_cmass.dat',unpack=True)
 #random = np.loadtxt('../../cmass/samples/100k_weighted_random.dat',unpack=True)
-data = np.loadtxt('../../cmass/samples/500k_weighted_north_cmass.dat',unpack=True)
-random = np.loadtxt('../../cmass/samples/1mil_weighted_random.dat',unpack=True)
+#data = np.loadtxt('../../cmass/samples/500k_weighted_north_cmass.dat',unpack=True)
+#random = np.loadtxt('../../cmass/samples/1mil_weighted_random.dat',unpack=True)
 
-#ra,dec,cmd = data[0], data[1], data[3]
-ra,dec,redz,cmd_org = data[0], data[1], data[2], data[3]
-radata = ra.copy()
-decdata = dec.copy()
-cmd = cosmo.comoving_distance(redz)
-cmd = cmd.value * 0.7
-x,y,z = pyncorr.radeccmd2xyz(ra,dec,cmd)
-data = np.array([x,y,z])
-
-ra,dec,redz,cmd_org = random[0], random[1], random[2], random[3]
-cmd = cosmo.comoving_distance(redz)
-cmd = cmd.value * 0.7
-x,y,z = pyncorr.radeccmd2xyz(ra,dec,cmd)
-random = np.array([x,y,z])
 
 #from mpl_toolkits.mplot3d import Axes3D
 #fig = plt.figure()
 ##ax = fig.add_subplot(111, projection='3d')
 ###plt.plot(ra,dec,cmd,'.',markersize=0.5,alpha=0.2)
-#plt.plot(radata,decdata,'.',markersize=0.5,alpha=0.2)
-##plt.plot(data[0],data[1],data[2],'.',markersize=0.5,alpha=0.2)
+#plt.plot(data[0],data[1],'.',markersize=0.5,alpha=0.2)
+#plt.plot(data[0],data[1],data[2],'.',markersize=0.5,alpha=0.2)
 #plt.show()
 #exit()
 
@@ -61,62 +58,16 @@ nr = len(random[0])
 #voxel_widths = [100,100,100]
 #voxel_widths = [300,300,700]
 #voxel_widths = [7100,7100,7100]
-voxel_widths = [200,200,200]
+voxel_widths = [5,5,1000000]
+hrange=11 # The range over which we will plot the correlation functions
 
 ###########################################################
-#x,y,z = pyncorr.radeccmd2xyz(data[0], data[1], data[2])
-#data = np.array([x,y,z])
+voxels_data, dim_data = pyncorr.return_voxelized_data(data,voxel_widths,verbose=True)
+nvoxels_data = dim_data["nvoxels"]
 
-loedges = [np.min(data[0]), np.min(data[1]), np.min(data[2])]
-hiedges = [np.max(data[0]), np.max(data[1]), np.max(data[2])]
-
-print(loedges)
-print(hiedges)
-
-nvoxels_data = pyncorr.define_boundaries(loedges, hiedges, voxel_widths)
-print(nvoxels_data)
-vcoords_data = pyncorr.divide_into_voxels(data, loedges, hiedges, voxel_widths, nvoxels_data)
-print(vcoords_data)
-print(vcoords_data[0][vcoords_data[0]!=0])
-print(vcoords_data[1][vcoords_data[1]!=0])
-print(vcoords_data[2][vcoords_data[2]!=0])
-
-voxels_data = pyncorr.voxelize_data(data, nvoxels_data, vcoords_data)
-
-
-###########################################################
-#x,y,z = pyncorr.radeccmd2xyz(random[0], random[1], random[2])
-#random = np.array([x,y,z])
-
-loedges = [np.min(random[0]), np.min(random[1]), np.min(random[2])]
-hiedges = [np.max(random[0]), np.max(random[1]), np.max(random[2])]
-
-print(loedges)
-print(hiedges)
-
-nvoxels_random = pyncorr.define_boundaries(loedges, hiedges, voxel_widths)
-print(nvoxels_random)
-vcoords_random = pyncorr.divide_into_voxels(random, loedges, hiedges, voxel_widths, nvoxels_random)
-print(vcoords_random)
-print(vcoords_random[0][vcoords_random[0]!=0])
-print(vcoords_random[1][vcoords_random[1]!=0])
-print(vcoords_random[2][vcoords_random[2]!=0])
-
-voxels_random = pyncorr.voxelize_data(random, nvoxels_random, vcoords_random)
-#exit()
-
+voxels_random, dim_random = pyncorr.return_voxelized_data(random,voxel_widths,verbose=True)
+nvoxels_random = dim_random["nvoxels"]
 ################################################################################
-data = data.transpose()
-random = random.transpose()
-
-#hrange = 450
-#hrange = 200
-hrange = 200
-
-plt.figure()
-plt.plot(data.transpose()[0],data.transpose()[1],',')
-#plt.show()
-#exit()
 
 
 ################ DR ##################################################
@@ -131,19 +82,23 @@ for i in range(nvoxels_data[0]):
         for k in range(nvoxels_data[2]):
             data_temp = voxels_data[i][j][k]
             if data_temp is not None:
+                print(i,j,k)
                 tot += len(data_temp)
 
                 for ii in range(i-1,i+2):
                     for jj in range(j-1,j+2):
                         for kk in range(k-1,k+2):
                             if ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
-                                print(i,j,k,ii,jj,kk)
+                                #print(i,j,k,ii,jj,kk)
                                 random_temp = voxels_random[ii][jj][kk]
 
                                 if data_temp is not None and random_temp is not None:
-                                    print("N galaxies: ",len(data_temp),len(random_temp))
+                                    print("DR %d(%d) %d(%d) %d(%d) N galaxies: %d %d"% (i,nvoxels_data[0],j,nvoxels_data[1],k,nvoxels_data[2],len(data_temp),len(random_temp)))
                                     tot_calc_dr += len(data_temp)*len(random_temp)
-                                    hist_temp,edges = pyncorr.cartesian_distance(data_temp,random_temp,histrange=(0,hrange),nbins=nbins)
+                                    #print("here")
+                                    #print(data_temp)
+                                    #exit()
+                                    hist_temp,edges = pyncorr.angular_distance(data_temp,random_temp,histrange=(0,hrange),nbins=nbins,verbose=True,log_scale=True)
                                     d += hist_temp
 dr = d
 pyncorr.write_out_paircounts(d,edges,nd,nr,filename='dr.dat',norm=nd*nr)
@@ -164,6 +119,7 @@ for i in range(nvoxels_data[0]):
         for k in range(nvoxels_data[2]):
             data_temp = voxels_data[i][j][k]
             if data_temp is not None:
+                print(i,j,k)
                 tot += len(data_temp)
 
                 for ii in range(i-1,i+2):
@@ -183,17 +139,18 @@ for i in range(nvoxels_data[0]):
                             list_of_combos_reversed.append(vindex_reversed)
 
                             if do_calc and ii<nvoxels_data[0] and jj<nvoxels_data[1] and kk<nvoxels_data[2] and ii>=0 and jj>=0 and kk>=0:
-                                print(i,j,k,ii,jj,kk)
+                                #print(i,j,k,ii,jj,kk)
                                 data_temp2 = voxels_data[ii][jj][kk]
 
                                 if data_temp is not None and data_temp2 is not None:
-                                    print("N galaxies: ",len(data_temp),len(data_temp2))
+                                    print("DD %d(%d) %d(%d) %d(%d) N galaxies: %d %d"% (i,nvoxels_data[0],j,nvoxels_data[1],k,nvoxels_data[2],len(data_temp),len(data_temp)))
+                                    #print("DD N galaxies: ",len(data_temp),len(data_temp2))
                                     if i==ii and j==jj and k==kk:
                                         tot_calc_dd += (len(data_temp)*len(data_temp2) - len(data_temp2))/2
-                                        hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
+                                        hist_temp,edges = pyncorr.angular_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True,log_scale=True)
                                     else:
                                         tot_calc_dd += (len(data_temp)*len(data_temp2))
-                                        hist_temp,edges = pyncorr.cartesian_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins)
+                                        hist_temp,edges = pyncorr.angular_distance(data_temp,data_temp2,histrange=(0,hrange),nbins=nbins,log_scale=True)
                                     d += hist_temp
 dd = d
 pyncorr.write_out_paircounts(d,edges,nd,nd,filename='dd.dat',norm=(nd*nd-nd)/2.0)
@@ -213,6 +170,7 @@ for i in range(nvoxels_random[0]):
         for k in range(nvoxels_random[2]):
             random_temp = voxels_random[i][j][k]
             if random_temp is not None:
+                print(i,j,k)
 
                 for ii in range(i-1,i+2):
                     for jj in range(j-1,j+2):
@@ -233,14 +191,15 @@ for i in range(nvoxels_random[0]):
                                 list_of_combos_reversed.append(vindex_reversed)
 
                                 if do_calc and ii<nvoxels_random[0] and jj<nvoxels_random[1] and kk<nvoxels_random[2] and ii>=0 and jj>=0 and kk>=0:
-                                    print(i,j,k,ii,jj,kk)
+                                    #print(i,j,k,ii,jj,kk)
                                     if random_temp is not None and random_temp2 is not None:
-                                        print("N galaxies: ",len(random_temp),len(random_temp2))
+                                        print("RR %d(%d) %d(%d) %d(%d) N galaxies: %d %d"% (i,nvoxels_random[0],j,nvoxels_random[1],k,nvoxels_random[2],len(random_temp),len(random_temp)))
+                                        #print("RR N galaxies: ",len(random_temp),len(random_temp2))
                                         if i==ii and j==jj and k==kk:
-                                            hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True)
+                                            hist_temp,edges = pyncorr.angular_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins, same_coords=True,log_scale=True)
                                             tot_calc_rr += (len(random_temp)*len(random_temp2) - len(random_temp2))/2
                                         else:
-                                            hist_temp,edges = pyncorr.cartesian_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins)
+                                            hist_temp,edges = pyncorr.angular_distance(random_temp,random_temp2,histrange=(0,hrange),nbins=nbins,log_scale=True)
                                             tot_calc_rr += (len(random_temp)*len(random_temp2))
                                         d += hist_temp
 dd = d
@@ -279,12 +238,18 @@ plt.figure()
 plt.plot(x,dr,'o',label='dr')
 plt.plot(x,dd,'o',label='dd')
 plt.plot(x,rr,'o',label='rr')
+plt.xlim(.0035,10)
+plt.xscale('log')
+plt.yscale('log')
 plt.legend()
 
 w = ((dd/ddnorm) - (2*dr/drnorm) + (rr/rrnorm))/(rr/rrnorm)
 
 plt.figure()
 plt.plot(x,w,'o',label='w')
+plt.xlim(.0035,10)
+plt.xscale('log')
+plt.yscale('log')
 plt.legend()
 
 plt.show()
