@@ -128,8 +128,70 @@ def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords
 
     return hist_tot,bin_edges
 
+################################################################################
+################################################################################
+def angular_distance(coord0, coord1, nbins=100, histrange=(0,200), log_scale=False, same_coords=False, verbose=False):
 
+    # Data is coming in as [ [xxx, xxx, xxx], ...]
+    # and is in degrees
 
+    coord0_T = coord0.transpose() 
+    ra0 = np.deg2rad(coord0_T[0])
+    dec0 = np.deg2rad(coord0_T[1])
 
+    coord1_T = coord1.transpose() 
+    ra1 = np.deg2rad(coord1_T[0])
+    dec1 = np.deg2rad(coord1_T[1])
 
+    cosdec0 = np.cos(dec0)
+    cosdec1 = np.cos(dec1)
 
+    sindec0 = np.sin(dec0)
+    sindec1 = np.sin(dec1)
+    
+    #hist_bins_log = []
+    #hist_bins_log += np.linspace(0.001,0.009,9).tolist()
+    #hist_bins_log += np.linspace(0.01,0.09,9).tolist()
+    #hist_bins_log += np.linspace(0.1,0.9,9).tolist()
+    #hist_bins_log += np.linspace(1.,10,10).tolist()
+    hist_bins_log = np.logspace(np.log10(0.005),np.log10(10.0), 31)
+
+    if log_scale==True:
+        nbins = len(hist_bins_log)-1
+        #nbins = len(hist_bins_log)
+    hist_tot = np.zeros(nbins,dtype=int)
+    bin_edges = None
+
+    #print("HEREREERE")
+    #print(hist_bins_log)
+    #exit()
+
+    ngals0 = len(ra0)
+    for i in range(0,ngals0):
+        #for i,(s,c,r) in enumerate(zip(sindec0,cosdec0,ra0)):
+        #print(i,s,c,r)
+        s = sindec0[i]
+        c = cosdec0[i]
+        r = ra0[i]
+
+        if verbose:
+            if i%1000==0:
+                print(i)
+
+        cos_ang_dist = None
+        if same_coords==False:
+            cos_ang_dist = s*sindec1 + c*cosdec1*np.cos(r-ra1)
+        else:
+            cos_ang_dist = s*sindec1[i+1:] + c*cosdec1[i+1:]*np.cos(r-ra1[i+1:])
+
+        ang_dist = np.rad2deg(np.arccos(cos_ang_dist)) # Convert to degrees
+
+        if log_scale==False:
+            hist = np.histogram(ang_dist, bins=nbins, range=histrange)
+        else:
+            hist = np.histogram(ang_dist, bins=hist_bins_log)
+
+        hist_tot += hist[0]
+        bin_edges = hist[1]
+
+    return hist_tot,bin_edges

@@ -13,8 +13,8 @@ t0 = time.time()
 print("Reading in some data....\n")
 
 # Read in some data
-#data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data.dat',cols_to_use=[0,1,2],convert=None)
-#random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random.dat',cols_to_use=[0,1,2],convert=None)
+data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data.dat',cols_to_use=[0,1,2],convert=None)
+random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random.dat',cols_to_use=[0,1,2],convert=None)
 
 #data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data_LARGE_SAMPLE.dat',cols_to_use=[0,1,2],convert=None)
 #random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random_LARGE_SAMPLE.dat',cols_to_use=[0,1,2],convert=None)
@@ -22,8 +22,8 @@ print("Reading in some data....\n")
 # REAL DATA
 #data = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
 #random = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_random.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
-data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
-random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
+#data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
+#random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert='radecredz2xyz')
 
 # Do this just to plot RA vs DEC
 #data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
