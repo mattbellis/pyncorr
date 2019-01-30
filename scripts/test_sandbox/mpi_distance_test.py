@@ -12,14 +12,20 @@ size = comm.size
 #seed = np.random.seed(4)
 #rand = np.random.random((1000,3))
 
-data = np.loadtxt("../../test_data/GRID_model_data.dat")
-rand = np.loadtxt("../../test_data/GRID_model_random.dat")
+#data = np.loadtxt("../../test_data/GRID_model_data.dat")
+#rand = np.loadtxt("../../test_data/GRID_model_random.dat")
+data = np.loadtxt("../../test_data/GRID_model_data_LARGE_SAMPLE.dat")
+rand = np.loadtxt("../../test_data/GRID_model_random_LARGE_SAMPLE.dat")
 
 #print(data[0],rand[0])
 
 
 ddiv = np.array_split(data,size)
 rdiv = np.array_split(rand,size)
+
+print(len(ddiv))
+for div in ddiv:
+    print(len(div))
 
 hist_dr = np.zeros(100)
 hist_dd = np.zeros(100)
