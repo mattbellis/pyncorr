@@ -30,8 +30,10 @@ print("Reading in some data....\n")
 # Do this just to plot RA vs DEC
 #data = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
 #random = pyncorr.read_in_columnar_data('../../cmass/samples/10k_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
-data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
-random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
+#data = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
+#random = pyncorr.read_in_columnar_data('../../cmass/samples/100k_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
+data = pyncorr.read_in_columnar_data('../../cmass/samples/500k_weighted_north_cmass.dat',cols_to_use=[0,1,2],convert=None)
+random = pyncorr.read_in_columnar_data('../../cmass/samples/1mil_weighted_random.dat',cols_to_use=[0,1,2],convert=None)
 
 #data = np.loadtxt('../../cmass/samples/100k_weighted_north_cmass.dat',unpack=True)
 #random = np.loadtxt('../../cmass/samples/100k_weighted_random.dat',unpack=True)
