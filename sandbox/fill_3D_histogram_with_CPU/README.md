@@ -1,14 +1,11 @@
-Build with 
-
+# Build 
 ```
 sh build .sh 
 ```
 
-################################################################################
-# Timing
-################################################################################
+## Timing
 
-# On my desktop
+### On my desktop
 ```
 time ./fill 100000000
 ```
@@ -19,7 +16,7 @@ Extrapolating
 28 hours to do 1 trillion entries
 
 
-# On my laptop
+### On my laptop
 ```
 time ./fill 100000000
 ```
