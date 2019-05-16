@@ -22,7 +22,7 @@ data = pyncorr.read_in_columnar_data('../test_data/GRID_model_data.dat',cols_to_
 random = pyncorr.read_in_columnar_data('../test_data/GRID_model_random.dat',cols_to_use=[0,1,2],convert=None)
 
 ################################################################################
-# You probably don't want to read in any of the larger datasets (>10k) when
+# You probably don't want to read in any of the larger datasets (>10k) when 
 # testing the code, just because it can take a while to run
 ################################################################################
 
@@ -41,11 +41,13 @@ nd = len(data[0])
 nr = len(random[0])
 
 
-################ DR ##################################################
+plt.figure()
+plt.plot(data[0],data[1],'.',markersize=1)
+
 t1 = time.time()
 
 # Note that the data/random should be transposed before passing it into the pyncorr functions
-dr,edges = pyncorr.angular_distance(data.transpose(),random.transpose(),histrange=(0,hrange),nbins=nbins)
+dr,edges = pyncorr.cartesian_distance(data.transpose(),random.transpose(),histrange=(0,hrange),nbins=nbins)
 pyncorr.write_out_paircounts(dr,edges,nd,nr,filename='dr.dat',norm=nd*nr)
 print("Finished with dr...")
 
@@ -53,26 +55,17 @@ t2 = time.time()
 
 print()
 
-dd,edges = pyncorr.angular_distance(data.transpose(),data.transpose(),histrange=(0,hrange),same_coords=True,nbins=nbins)
+dd,edges = pyncorr.cartesian_distance(data.transpose(),data.transpose(),histrange=(0,hrange),same_coords=True,nbins=nbins)
 pyncorr.write_out_paircounts(dd,edges,nd,nd,filename='dd.dat',norm=(nd*nd-nd)/2.0)
 print("Finished with dd...")
 
 t3 = time.time()
 
-rr,edges = pyncorr.angular_distance(random.transpose(),random.transpose(),histrange=(0,hrange),same_coords=True,nbins=nbins)
+rr,edges = pyncorr.cartesian_distance(random.transpose(),random.transpose(),histrange=(0,hrange),same_coords=True,nbins=nbins)
 pyncorr.write_out_paircounts(rr,edges,nr,nr,filename='rr.dat',norm=(nr*nr-nr)/2.0)
 print("Finished with rr...")
 
-
-################################################################################
 t4 = time.time()
-
-print("Time to read in and plot the data: %f sec" % (t1-t0))
-print("Time to calc DR: %f sec" % (t2-t1))
-print("Time to calc DD: %f sec" % (t3-t2))
-print("Time to calc RR: %f sec" % (t4-t3))
-
-print()
 
 # Read in the data
 dd_data = np.loadtxt('dd.dat',unpack=True)
@@ -97,5 +90,10 @@ w = ((dd/ddnorm) - (2*dr/drnorm) + (rr/rrnorm))/(rr/rrnorm)
 plt.figure()
 plt.plot(x,w,'o',label='w')
 plt.legend()
+
+print("Time to read in and plot the data: %f sec" % (t1-t0))
+print("Time to calc DR: %f sec" % (t2-t1))
+print("Time to calc DD: %f sec" % (t3-t2))
+print("Time to calc RR: %f sec" % (t4-t3))
 
 plt.show()
