@@ -5,9 +5,9 @@
 
 int main(int argc, char *argv[]) {
 
-    int nvals = atoi(argv[1]);
+    unsigned long nvals = atoll(argv[1]);
 
-    printf("nvals: %d\n",nvals);
+    printf("nvals: %lu\n",nvals);
 
     //long long *hist = long long *(malloc(r * c * sizeof(int));
 
@@ -46,14 +46,14 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Zeroed the memory.\n");
-    printf("Filling the memory with %d entries .\n",nvals);
+    printf("Filling the memory with %lu entries .\n",nvals);
 
     printf("RAND_MAX: %d\n",RAND_MAX);
     int slice = (int)(RAND_MAX/imax);
 
-    for(int count=0;count<nvals;count++)
+    for(unsigned long count=0;count<nvals;count++)
     {
-        if (count%100000==0){
+        if (count%1000000==0){
             printf("count: %d\n",count);
         }
         /*
@@ -78,6 +78,18 @@ int main(int argc, char *argv[]) {
             hist[i][j][k]++;
     }
                       
+        for (i = 0; i <  imax; i++)  {
+          printf("%d\n",i);
+            for (j = 0; j < jmax; j++) {
+                  for (k = 0; k < kmax; k++) {
+                      printf("%d ",hist[i][j][k]);
+                  }
+                  printf("\n");
+            }
+          printf("\n");
+        }
+    
+
     /*
     for (i = 0; i <  imax; i++) 
           for (j = 0; j < jmax; j++) 
