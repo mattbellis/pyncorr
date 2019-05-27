@@ -1,6 +1,21 @@
 import numpy as np
 import scipy.spatial as spatial
 
+PI = np.pi
+
+################################################################################
+################################################################################
+def distance(a,b):
+
+    c = a-b
+    #print(a,b,c)
+
+    d = np.sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2])
+
+    return d
+
+################################################################################
+################################################################################
 def cartesian_distance(coord0, coord1, nbins=100, histrange=(0,200), same_coords=False):
 
     # For debugging
@@ -195,3 +210,86 @@ def angular_distance(coord0, coord1, nbins=100, histrange=(0,200), log_scale=Fal
         bin_edges = hist[1]
 
     return hist_tot,bin_edges
+
+################################################################################
+################################################################################
+def three_point_correlation_function(coord0, coord1, coord2, nbins=(100,100,100), histrange=[(0,200),(0,200),(0,200)], triplet_to_calculate="DDD"):
+
+    # For debugging
+    #hist = np.histogram(coord0.transpose()[0], bins=nbins, range=histrange)
+    #hist_tot = hist[0]
+    #bin_edges = hist[1]
+    #return hist_tot,bin_edges
+
+    # Assume the data is coming in ngals x 3 arrays
+    # x, y, z (all in Mpc)
+    # For example, 
+    # [ [ 1253.0, 2384.4, 3425.24], 
+    #   [ 1987.5, 2564.7, 2439.42], 
+    #   ......................... ]
+
+    #print("Ngals: %d %d" % (len(coord0), len(coord1)))
+    nc0 = len(coord0)
+    nc1 = len(coord1)
+    nc2 = len(coord2)
+
+    print("sizes: ",nc0,nc1,nc2)
+
+    hist_tot = np.zeros(nbins,dtype=int)
+    bin_edges = None
+
+    triangles = []
+
+    for i in range(nc0):
+        c0 = coord0[i]
+        if i%10==0:
+            print("Outermost loop {0} of {1}".format(i,nc0))
+
+        lo1 = 0
+        if triplet_to_calculate=="DDD" or \
+           triplet_to_calculate=="DDR" or \
+           triplet_to_calculate=="RRR":
+            lo1 = i+1
+
+        for j in range(lo1,nc1):
+            c1 = coord1[j]
+
+            lo2 = 0
+            if triplet_to_calculate=="DDD" or \
+               triplet_to_calculate=="DRR" or \
+               triplet_to_calculate=="RRR":
+                lo2 = j+1
+
+            for k in range(lo2,nc2):
+                c2 = coord2[k]
+
+                #print(i,j,k)
+                #print(c0,c1,c2)
+
+                r01 = distance(c0,c1)
+                r02 = distance(c0,c2)
+                r12 = distance(c1,c2)
+
+                # From Fig. 6
+                # https://arxiv.org/pdf/astro-ph/0403638.pdf
+                sides = np.sort([r01,r02,r12])
+                r01 = sides[0]
+                r02 = sides[1]
+                r12 = sides[2]
+                #print("sides")
+                #print(sides)
+                s = r01
+                q = r02/r01
+                theta = np.arccos((r01*r01 + r02*r02 - r12*r12)/(2*r01*r02))
+                theta /= PI
+
+                #print([s,q,theta])
+                triangles.append([s,q,theta])
+
+    triangles = np.array(triangles)
+    print(len(triangles))
+    H,edges = np.histogramdd(triangles,bins=nbins,range=histrange)
+                    
+
+    return H,edges
+

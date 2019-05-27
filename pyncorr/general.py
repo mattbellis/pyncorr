@@ -78,3 +78,34 @@ def radeccmd2xyz(ra, dec, cmd):
     return x,y,z
 
 
+################################################################################
+########### NOT WORKING RIGHT NOW ##############################################
+def write_out_tripletcounts(H, edges, n0, n1, n2, filename="output.dat", norm=None):
+
+    if norm==None:
+        norm = n0*n1
+
+    # We add some zeros for padding, just to make reading in the files
+    # a bit easier later on. 
+    output = "{0:d} {1:d} {2:d}\n".format(n0, n1, n2)
+    output += "{0:d} {1:d} {2:d}\n".format(H.shape[0], H.shape[1], H.shape[2])
+    output += "{0}\n".format(norm)
+    for i in range(3):
+        for edge in edges[i]:
+            output += "{0:.3f} ".format(edge)
+        output += "\n"
+
+    for i in range(H.shape[0]):
+        for j in range(H.shape[1]):
+            for k in range(H.shape[2]):
+                output += "{0:d} ".format(int(H[i][j][k]))
+            output += "\n"
+        output += "\n"
+
+
+    outfile = open(filename,'w+')
+
+    outfile.write(output)
+
+    outfile.close()
+
